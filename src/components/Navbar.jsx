@@ -7,12 +7,35 @@ export default function Navbar() {
   const menuRef = useRef(null);
   const [menuHeight, setMenuHeight] = useState(0);
 
-  // Calculate height for smooth animation
+  const [showNavbar, setShowNavbar] = useState(true); // show/hide state
+  const [lastScroll, setLastScroll] = useState(0);
+
+  // Calculate height for mobile menu
   useEffect(() => {
     if (menuRef.current) {
       setMenuHeight(menuRef.current.scrollHeight);
     }
   }, [menuRef, isOpen]);
+
+  // Scroll listener for hide/show navbar
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScroll = window.pageYOffset;
+
+      if (currentScroll > lastScroll && currentScroll > 100) {
+        // scrolling down → hide
+        setShowNavbar(false);
+      } else {
+        // scrolling up → show
+        setShowNavbar(true);
+      }
+
+      setLastScroll(currentScroll);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScroll]);
 
   const links = [
     { name: "Home", path: "/" },
@@ -23,8 +46,12 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="bg-gray-800 text-white sticky top-0 z-50 shadow">
-      <div className="container mx-auto flex justify-between items-center p-4">
+    <nav
+      className={`bg-gray-800 text-white z-50 shadow transition-transform duration-300 ${
+        showNavbar ? "translate-y-0" : "-translate-y-full"
+      }`}
+    >
+      <div className="container mx-auto flex justify-between items-center p-6">
         {/* Logo */}
         <Link to="/" className="text-2xl font-bold hover:text-purple-300 transition">
           WebForge
@@ -69,19 +96,14 @@ export default function Navbar() {
                   d="M6 18L18 6M6 6l12 12"
                 />
               ) : (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               )}
             </svg>
           </button>
         </div>
       </div>
 
-      {/* Mobile Menu Links with smooth transition */}
+      {/* Mobile Menu Links */}
       <div
         ref={menuRef}
         className={`md:hidden overflow-hidden transition-all duration-500 ease-in-out`}
