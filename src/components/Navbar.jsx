@@ -7,29 +7,23 @@ export default function Navbar() {
   const menuRef = useRef(null);
   const [menuHeight, setMenuHeight] = useState(0);
 
-  const [showNavbar, setShowNavbar] = useState(true); // show/hide state
+  const [showNavbar, setShowNavbar] = useState(true);
   const [lastScroll, setLastScroll] = useState(0);
 
-  // Calculate height for mobile menu
   useEffect(() => {
     if (menuRef.current) {
       setMenuHeight(menuRef.current.scrollHeight);
     }
-  }, [menuRef, isOpen]);
+  }, [isOpen]);
 
-  // Scroll listener for hide/show navbar
   useEffect(() => {
     const handleScroll = () => {
       const currentScroll = window.pageYOffset;
-
       if (currentScroll > lastScroll && currentScroll > 100) {
-        // scrolling down → hide
         setShowNavbar(false);
       } else {
-        // scrolling up → show
         setShowNavbar(true);
       }
-
       setLastScroll(currentScroll);
     };
 
@@ -47,26 +41,30 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`bg-gray-800 text-white z-50 shadow transition-transform duration-300 ${
+      className={`w-full bg-yellow-300 text-gray-900 ${
         showNavbar ? "translate-y-0" : "-translate-y-full"
       }`}
     >
-      <div className="container mx-auto flex justify-between items-center p-6">
+      <div className="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
+        
         {/* Logo */}
-        <Link to="/" className="text-2xl font-bold hover:text-purple-300 transition">
+        <Link
+          to="/"
+          className="text-2xl font-extrabold tracking-wide hover:text-gray-700 transition"
+        >
           WebForge
         </Link>
 
-        {/* Desktop Links */}
-        <ul className="hidden md:flex space-x-6">
+        {/* Desktop Menu */}
+        <ul className="hidden md:flex space-x-8">
           {links.map((link) => (
             <li key={link.name}>
               <Link
                 to={link.path}
-                className={`transition font-medium ${
+                className={`font-semibold transition relative ${
                   location.pathname === link.path
-                    ? "text-yellow-400 underline"
-                    : "text-white hover:text-purple-400"
+                    ? "text-red-600 after:absolute after:-bottom-1 after:left-0 after:w-full after:h-[2px] after:bg-red-600"
+                    : "hover:text-red-600"
                 }`}
               >
                 {link.name}
@@ -75,26 +73,12 @@ export default function Navbar() {
           ))}
         </ul>
 
-        {/* Mobile Menu Button */}
+        {/* Mobile Button */}
         <div className="md:hidden">
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="focus:outline-none transition-transform transform hover:scale-110"
-          >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
+          <button onClick={() => setIsOpen(!isOpen)}>
+            <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               {isOpen ? (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               ) : (
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               )}
@@ -103,22 +87,22 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Menu Links */}
+      {/* Mobile Menu */}
       <div
         ref={menuRef}
-        className={`md:hidden overflow-hidden transition-all duration-500 ease-in-out`}
+        className="md:hidden overflow-hidden transition-all duration-500"
         style={{ maxHeight: isOpen ? `${menuHeight}px` : "0px" }}
       >
-        <ul className="bg-gray-800 px-4 pb-4 space-y-2">
+        <ul className="bg-yellow-400 px-6 pb-4 space-y-3">
           {links.map((link) => (
             <li key={link.name}>
               <Link
                 to={link.path}
                 onClick={() => setIsOpen(false)}
-                className={`block transition font-medium ${
+                className={`block font-semibold transition ${
                   location.pathname === link.path
-                    ? "text-yellow-400 underline"
-                    : "text-white hover:text-purple-400"
+                    ? "text-red-600"
+                    : "hover:text-red-600"
                 }`}
               >
                 {link.name}
